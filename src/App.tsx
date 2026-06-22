@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "./components/layout/AppShell";
 import { AddChore } from "./routes/AddChore";

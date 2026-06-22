@@ -6,9 +6,11 @@ CuraCasa V2 e' una PWA statica basata sullo stesso stack di CuraMotori:
 - React
 - TypeScript
 - React Router
-- Clerk per autenticazione
+- Clerk per autenticazione (`@clerk/react`)
 - lucide-react per icone
 - Render Static Site per deploy
+
+Quickstart Clerk React: https://clerk.com/docs/react/getting-started/quickstart
 
 ## Setup locale
 

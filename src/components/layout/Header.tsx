@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/react";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ export function Header() {
         </span>
         <span>CuraCasa</span>
       </Link>
-      <UserButton afterSignOutUrl="/" />
+      <UserButton />
     </header>
   );
 }

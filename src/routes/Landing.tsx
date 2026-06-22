@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react";
+import { Show, SignInButton, SignUpButton } from "@clerk/react";
 import { ArrowRight, CalendarDays, Home, ListChecks, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -14,11 +14,11 @@ export function Landing() {
         <span className="landing-logo">
           <Home size={17} /> CuraCasa
         </span>
-        <SignedIn>
+        <Show when="signed-in">
           <Link className="landing-mini-link" to="/app">
             Apri app
           </Link>
-        </SignedIn>
+        </Show>
       </header>
 
       <section className="landing-hero">
@@ -30,7 +30,7 @@ export function Landing() {
             fogli sparsi o calendari rigidi.
           </p>
           <div className="landing-actions">
-            <SignedOut>
+            <Show when="signed-out">
               <SignInButton mode="modal">
                 <button className="landing-cta landing-cta--primary" type="button">
                   <span>Accedi</span>
@@ -42,13 +42,13 @@ export function Landing() {
                   Crea account
                 </button>
               </SignUpButton>
-            </SignedOut>
-            <SignedIn>
+            </Show>
+            <Show when="signed-in">
               <Link className="landing-cta landing-cta--primary" to="/app">
                 <span>Vai alla dashboard</span>
                 <ArrowRight size={17} />
               </Link>
-            </SignedIn>
+            </Show>
           </div>
         </div>
 
