@@ -1,0 +1,31 @@
+import { ClerkProvider } from "@clerk/clerk-react";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { clerkPublishableKey } from "./lib/clerk";
+import "./styles/global.css";
+
+function MissingClerkConfig() {
+  return (
+    <main className="setup-screen">
+      <span className="eyebrow">Configurazione richiesta</span>
+      <h1>Inserisci la chiave Clerk</h1>
+      <p>Copia `.env.example` in `.env.local` e valorizza `VITE_CLERK_PUBLISHABLE_KEY`.</p>
+    </main>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    {clerkPublishableKey ? (
+      <ClerkProvider publishableKey={clerkPublishableKey} afterSignOutUrl="/">
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ClerkProvider>
+    ) : (
+      <MissingClerkConfig />
+    )}
+  </StrictMode>,
+);
