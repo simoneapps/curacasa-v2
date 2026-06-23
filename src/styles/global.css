@@ -641,7 +641,7 @@ p {
   height: 48px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--soft);
+  border: 1px solid rgba(184, 135, 141, .7);
   border-radius: 17px;
   overflow: hidden;
   color: var(--sage);
@@ -651,11 +651,11 @@ p {
 
 .chore-icon-img {
   display: block;
-  border-radius: inherit;
+  border-radius: 13px;
   object-fit: cover;
   transform: none;
-  width: 100% !important;
-  height: 100% !important;
+  width: 40px !important;
+  height: 40px !important;
 }
 
 .icon-picker-trigger {
