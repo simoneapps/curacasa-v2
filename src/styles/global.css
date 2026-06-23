@@ -645,14 +645,17 @@ p {
   border-radius: 17px;
   overflow: hidden;
   color: var(--sage);
-  background: #f9f3ec;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .72), 0 8px 18px rgba(59, 55, 49, .08);
+  background: var(--rose);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .34), 0 8px 18px rgba(59, 55, 49, .08);
 }
 
 .chore-icon-img {
   display: block;
   border-radius: inherit;
   object-fit: cover;
+  transform: scale(1.18);
+  width: 120% !important;
+  height: 120% !important;
 }
 
 .icon-picker-trigger {
