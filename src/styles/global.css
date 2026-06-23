@@ -642,7 +642,7 @@ p {
   display: grid;
   place-items: center;
   border: 1px solid var(--soft);
-  border-radius: 999px;
+  border-radius: 17px;
   overflow: hidden;
   color: var(--sage);
   background: #f9f3ec;
@@ -653,6 +653,82 @@ p {
   display: block;
   border-radius: inherit;
   object-fit: cover;
+}
+
+.icon-picker-trigger {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--soft);
+  border-radius: 20px;
+  padding: 6px 11px 6px 6px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, .78);
+  cursor: pointer;
+  text-align: left;
+}
+
+.icon-picker-trigger strong {
+  overflow: hidden;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.icon-picker-menu {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  display: grid;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid rgba(26, 26, 26, .08);
+  border-radius: 24px;
+  background: rgba(255, 253, 249, .96);
+  box-shadow: 0 18px 42px rgba(59, 55, 49, .16);
+  backdrop-filter: blur(18px);
+}
+
+.icon-picker-option {
+  width: 100%;
+  min-height: 56px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  padding: 5px;
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.icon-picker-option:hover,
+.icon-picker-option.active {
+  border-color: rgba(184, 135, 141, .24);
+  background: rgba(184, 135, 141, .11);
+}
+
+.icon-picker-option span:nth-child(2) {
+  overflow: hidden;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .page-heading {
@@ -731,11 +807,13 @@ p {
 
 .form-grid {
   display: grid;
+  align-items: start;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-label {
+label,
+.icon-picker-field {
   display: grid;
   gap: 7px;
   color: rgba(26, 26, 26, .58);
@@ -743,6 +821,10 @@ label {
   font-weight: 900;
   letter-spacing: .12em;
   text-transform: uppercase;
+}
+
+.icon-picker-field {
+  position: relative;
 }
 
 input,
