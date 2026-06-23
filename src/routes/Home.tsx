@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays, Clock, ListChecks, Sparkles } from "lucide-react";
-import { choreIcons, type ChoreIconName } from "../lib/icons";
+import { ChoreIcon } from "../lib/icons";
 import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor } from "../lib/store";
 
 export function Home() {
@@ -23,7 +23,6 @@ export function Home() {
     setData(next);
   }
 
-  const RecommendedIcon = choreIcons[(recommended?.icon || "home") as ChoreIconName] || Sparkles;
   const recommendedLast = recommended ? lastLog(recommended, data.logs) : null;
 
   return (
@@ -94,7 +93,7 @@ export function Home() {
       {recommended ? (
         <section className="recommend-card">
           <span className="icon-tile">
-            <RecommendedIcon size={21} />
+            <ChoreIcon name={recommended.icon} size={40} />
           </span>
           <div>
             <p className="eyebrow">Attivita consigliata</p>

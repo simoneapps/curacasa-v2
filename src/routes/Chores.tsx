@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Pencil, Search } from "lucide-react";
-import { choreIcons, type ChoreIconName } from "../lib/icons";
+import { Check, Search } from "lucide-react";
+import { ChoreIcon } from "../lib/icons";
 import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor } from "../lib/store";
 
 export function Chores() {
@@ -54,12 +54,11 @@ export function Chores() {
 
       <section className="task-list">
         {chores.map((chore) => {
-          const Icon = choreIcons[(chore.icon || "home") as ChoreIconName] || Pencil;
           const last = lastLog(chore, data.logs);
           return (
             <article className={`task-row ${statusFor(chore, data.logs)}`} key={chore.id}>
               <span className="icon-tile">
-                <Icon size={21} />
+                <ChoreIcon name={chore.icon} size={40} />
               </span>
               <div>
                 <strong>{chore.title}</strong>

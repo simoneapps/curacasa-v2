@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { choreIconOptions } from "../lib/icons";
 import { loadData, saveData, type Chore, type ChoreType } from "../lib/store";
 
 export function AddChore() {
@@ -14,7 +15,7 @@ export function AddChore() {
       id: `chore_${crypto.getRandomValues(new Uint32Array(3)).join("")}`,
       title: String(form.get("title") || "").trim(),
       description: String(form.get("description") || "").trim(),
-      icon: String(form.get("icon") || "home"),
+      icon: String(form.get("icon") || "casa"),
       type: String(form.get("type") || "ordinaria") as ChoreType,
       room: String(form.get("room") || "").trim(),
       frequency: Number(form.get("frequency") || 0),
@@ -54,13 +55,12 @@ export function AddChore() {
           </label>
           <label>
             Icona
-            <select name="icon" defaultValue="home">
-              <option value="home">Casa</option>
-              <option value="bath">Bagno</option>
-              <option value="kitchen">Cucina</option>
-              <option value="bed">Camera</option>
-              <option value="plant">Balcone</option>
-              <option value="vacuum">Pulizia</option>
+            <select name="icon" defaultValue="casa">
+              {choreIconOptions.map((icon) => (
+                <option key={icon.value} value={icon.value}>
+                  {icon.label}
+                </option>
+              ))}
             </select>
           </label>
         </div>
