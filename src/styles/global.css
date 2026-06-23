@@ -653,9 +653,9 @@ p {
   display: block;
   border-radius: inherit;
   object-fit: cover;
-  transform: scale(1.03);
-  width: 104% !important;
-  height: 104% !important;
+  transform: none;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .icon-picker-trigger {
