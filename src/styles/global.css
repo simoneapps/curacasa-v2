@@ -663,7 +663,7 @@ p {
 
 .due-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 13px;
   padding: 14px;
@@ -720,6 +720,18 @@ p {
 .due-card.overdue em {
   color: var(--paper);
   background: var(--rose-deep);
+}
+
+.due-card button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--soft);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 253, 249, .68);
+  cursor: pointer;
 }
 
 .recommend-card button,
@@ -895,6 +907,16 @@ p {
   text-transform: uppercase;
 }
 
+.task-row .icon-hit-area {
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .task-actions {
   display: inline-flex;
   align-items: center;
@@ -934,6 +956,106 @@ p {
   border-radius: 999px;
   color: var(--ink);
   background: rgba(255, 253, 249, .72);
+  cursor: pointer;
+}
+
+.task-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  align-items: end;
+  padding: 16px;
+  background: rgba(23, 23, 24, .24);
+  backdrop-filter: blur(8px);
+}
+
+.task-sheet {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(26, 26, 26, .08);
+  border-radius: 30px;
+  background: rgba(255, 253, 249, .96);
+  box-shadow: 0 28px 80px rgba(26, 26, 26, .24);
+}
+
+.task-sheet .form-title {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.task-sheet h2 {
+  overflow: hidden;
+  font-size: 1.35rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-sheet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-sheet-meta span {
+  border: 1px solid var(--soft);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .52);
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sheet-copy {
+  color: rgba(26, 26, 26, .72);
+  font-size: .86rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.muted-copy {
+  color: var(--muted);
+}
+
+.timer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(184, 135, 141, .18);
+  border-radius: 22px;
+  background: rgba(234, 210, 213, .28);
+}
+
+.timer-card > div,
+.timer-card button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-card strong {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+}
+
+.timer-card button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 12px;
+  color: var(--paper);
+  background: var(--frame);
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 

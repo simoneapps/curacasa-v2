@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, Clock, ListChecks, Sparkles } from "lucide-react";
+import { CalendarDays, Check, Clock, ListChecks, Sparkles } from "lucide-react";
 import { ChoreIcon } from "../lib/icons";
 import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor } from "../lib/store";
 
@@ -114,6 +114,9 @@ export function Home() {
                     </span>
                   </div>
                   <em>{dueLabel(chore.id)}</em>
+                  <button type="button" onClick={() => markDone(chore.id)} aria-label={`Completa ${chore.title}`}>
+                    <Check size={16} />
+                  </button>
                 </article>
               );
             })}

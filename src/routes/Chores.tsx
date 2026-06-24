@@ -1,6 +1,6 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Pencil, Search, X } from "lucide-react";
+import { Check, Clock, Pencil, Play, Search, Square, X } from "lucide-react";
 import { ChoreIcon, choreIconOptions, type ChoreIconName } from "../lib/icons";
 import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor, type ChoreType } from "../lib/store";
 
@@ -9,8 +9,13 @@ export function Chores() {
   const [room, setRoom] = useState("");
   const [query, setQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState<ChoreIconName>("casa");
   const [iconMenuOpen, setIconMenuOpen] = useState(false);
+  const [timerStartedAt, setTimerStartedAt] = useState<number | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [manualMinutes, setManualMinutes] = useState("");
+  const [completionNote, setCompletionNote] = useState("");
 
   const rooms = useMemo(() => ["", ...data.rooms], [data.rooms]);
   const chores = data.chores.filter((chore) => {
@@ -25,8 +30,39 @@ export function Chores() {
     setData(next);
   }
 
+  function markDoneWithDetails(choreId: string) {
+    const timerMinutes = elapsedSeconds ? Math.max(1, Math.round(elapsedSeconds / 60)) : 0;
+    const durationMinutes = Number(manualMinutes || timerMinutes || 0);
+    const next = addLog(data, choreId, {
+      durationMinutes,
+      note: completionNote.trim(),
+    });
+    saveData(next);
+    setData(next);
+    closeDetail();
+  }
+
+  function openDetail(choreId: string) {
+    setDetailId(choreId);
+    setEditingId(null);
+    setIconMenuOpen(false);
+    setTimerStartedAt(null);
+    setElapsedSeconds(0);
+    setManualMinutes("");
+    setCompletionNote("");
+  }
+
+  function closeDetail() {
+    setDetailId(null);
+    setTimerStartedAt(null);
+    setElapsedSeconds(0);
+    setManualMinutes("");
+    setCompletionNote("");
+  }
+
   function startEdit(choreId: string, icon: string) {
     setEditingId(choreId);
+    setDetailId(null);
     setSelectedIcon((choreIconOptions.some((option) => option.value === icon) ? icon : "casa") as ChoreIconName);
     setIconMenuOpen(false);
   }
@@ -61,6 +97,18 @@ export function Chores() {
     setEditingId(null);
     setIconMenuOpen(false);
   }
+
+  useEffect(() => {
+    if (!timerStartedAt) return;
+    const interval = window.setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - timerStartedAt) / 1000));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [timerStartedAt]);
+
+  const detailChore = detailId ? data.chores.find((chore) => chore.id === detailId) : null;
+  const detailLast = detailChore ? lastLog(detailChore, data.logs) : null;
+  const timerLabel = `${String(Math.floor(elapsedSeconds / 60)).padStart(2, "0")}:${String(elapsedSeconds % 60).padStart(2, "0")}`;
 
   return (
     <div className="page-stack">
@@ -99,9 +147,11 @@ export function Chores() {
             return (
               <div className="task-edit-group" key={chore.id}>
                 <article className={`task-row ${statusFor(chore, data.logs)}`}>
-                  <span className="icon-tile">
-                    <ChoreIcon name={chore.icon} size={40} />
-                  </span>
+                  <button className="icon-hit-area" type="button" onClick={() => openDetail(chore.id)} aria-label={`Apri ${chore.title}`}>
+                    <span className="icon-tile">
+                      <ChoreIcon name={chore.icon} size={40} />
+                    </span>
+                  </button>
                   <div>
                     <strong>{chore.title}</strong>
                     <span>
@@ -244,6 +294,70 @@ export function Chores() {
           </div>
         </section>
       )}
+      {detailChore ? (
+        <div className="task-sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="task-sheet-title">
+          <section className="task-sheet">
+            <div className="form-title">
+              <span className="icon-tile">
+                <ChoreIcon name={detailChore.icon} size={40} />
+              </span>
+              <div>
+                <p className="eyebrow">{detailChore.room || "Tutta casa"}</p>
+                <h2 id="task-sheet-title">{detailChore.title}</h2>
+              </div>
+              <button className="icon-only-button" type="button" onClick={closeDetail} aria-label="Chiudi scheda">
+                <X size={17} />
+              </button>
+            </div>
+            <div className="task-sheet-meta">
+              <span>{detailChore.type}</span>
+              <span>{detailChore.frequency ? `Ogni ${detailChore.frequency} giorni` : "Senza scadenza"}</span>
+              <span>{relativeDays(daysAgo(detailLast?.completedAt))}</span>
+            </div>
+            {detailChore.description ? <p className="sheet-copy">{detailChore.description}</p> : null}
+            {detailChore.notes ? <p className="sheet-copy muted-copy">{detailChore.notes}</p> : null}
+            <div className="timer-card">
+              <div>
+                <Clock size={18} />
+                <strong>{timerLabel}</strong>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (timerStartedAt) {
+                    setTimerStartedAt(null);
+                    return;
+                  }
+                  setTimerStartedAt(Date.now() - elapsedSeconds * 1000);
+                }}
+              >
+                {timerStartedAt ? <Square size={16} /> : <Play size={16} />}
+                {timerStartedAt ? "Ferma" : "Avvia"}
+              </button>
+            </div>
+            <div className="form-grid">
+              <label>
+                Durata manuale
+                <input
+                  value={manualMinutes}
+                  onChange={(event) => setManualMinutes(event.target.value)}
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  placeholder={detailChore.estimatedMinutes ? `${detailChore.estimatedMinutes} min stimati` : "Minuti"}
+                />
+              </label>
+              <label>
+                Nota
+                <input value={completionNote} onChange={(event) => setCompletionNote(event.target.value)} placeholder="Dettagli opzionali" />
+              </label>
+            </div>
+            <button className="primary-action" type="button" onClick={() => markDoneWithDetails(detailChore.id)}>
+              Segna svolta oggi
+            </button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
