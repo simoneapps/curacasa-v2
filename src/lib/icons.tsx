@@ -58,7 +58,6 @@ export const choreIconImages = {
   mensole: "/chore-icons/mensole.jpg",
   dyson: "/chore-icons/dyson.jpg",
   "dyson-accessori": "/chore-icons/dyson-accessori.jpg",
-  "dyson-scopa": "/chore-icons/dyson-scopa.jpg",
   "macchina-caffe": "/chore-icons/macchina-caffe.jpg",
   "sifone-lavandino": "/chore-icons/sifone-lavandino.jpg",
 } as const;
@@ -123,7 +122,6 @@ export const choreIconOptions: Array<{ value: ChoreIconName; label: string }> = 
   { value: "mensole", label: "Mensole" },
   { value: "dyson", label: "Dyson" },
   { value: "dyson-accessori", label: "Dyson accessori" },
-  { value: "dyson-scopa", label: "Dyson scopa" },
   { value: "macchina-caffe", label: "Macchina caffe" },
   { value: "sifone-lavandino", label: "Sifone lavandino" },
 ];
