@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays, Clock, ListChecks, Sparkles } from "lucide-react";
 import { ChoreIcon } from "../lib/icons";
@@ -11,11 +11,6 @@ export function Home() {
   const due = data.chores.filter((chore) => statusFor(chore, data.logs) !== "normal");
   const recommended = due[0] || data.chores[0];
   const doneThisWeek = data.logs.filter((log) => daysAgo(log.completedAt)! <= 7).length;
-
-  const progress = useMemo(() => {
-    if (!data.chores.length) return 0;
-    return Math.round((doneToday / data.chores.length) * 100);
-  }, [data.chores.length, doneToday]);
 
   function markDone(choreId: string) {
     const next = addLog(data, choreId);
@@ -35,20 +30,6 @@ export function Home() {
           <Link className="pill-button" to="/app/faccende">
             Vai alle faccende
           </Link>
-        </div>
-        <div className="progress-jewel" aria-label={`${progress}% fatto oggi`}>
-          <svg viewBox="0 0 96 96">
-            <circle cx="48" cy="48" r="35" />
-            <circle
-              className="progress-ring"
-              cx="48"
-              cy="48"
-              r="35"
-              style={{ strokeDashoffset: data.chores.length ? 220 - (220 * Math.max(progress, 20)) / 100 : 220 }}
-            />
-          </svg>
-          <strong>{progress}%</strong>
-          <small>oggi</small>
         </div>
       </section>
 

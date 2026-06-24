@@ -54,11 +54,11 @@ export function Calendar() {
             <button type="button" onClick={() => shift(-1)}>
               Indietro
             </button>
-            <button type="button" onClick={() => setMonth(monthKey())}>
-              Oggi
-            </button>
             <button type="button" onClick={() => shift(1)}>
               Avanti
+            </button>
+            <button type="button" onClick={() => setMonth(monthKey())}>
+              Oggi
             </button>
           </div>
         </div>
