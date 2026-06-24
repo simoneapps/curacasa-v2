@@ -856,11 +856,45 @@ p {
   gap: 14px;
 }
 
+.shop-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .54);
+  box-shadow: inset 0 0 0 1px rgba(26, 26, 26, .05);
+}
+
+.shop-tabs button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  background: transparent;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.shop-tabs button.active {
+  color: var(--paper);
+  background: var(--ink);
+}
+
 .pack-card {
   display: grid;
   gap: 14px;
   padding: 18px;
   border-radius: 28px;
+}
+
+.activity-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 24px;
 }
 
 .pack-preview {
@@ -881,6 +915,34 @@ p {
   color: var(--paper);
   background: var(--rose);
   font-weight: 900;
+  cursor: pointer;
+}
+
+.activity-card h2 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: .92rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.activity-card span {
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.activity-card button {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  color: var(--paper);
+  background: var(--rose);
   cursor: pointer;
 }
 
