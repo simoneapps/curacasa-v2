@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays, Clock, ListChecks, Sparkles } from "lucide-react";
 import { ChoreIcon } from "../lib/icons";
@@ -6,9 +6,15 @@ import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor }
 
 export function Home() {
   const [data, setData] = useState(loadData);
+  const dueSectionRef = useRef<HTMLElement | null>(null);
   const todayKey = new Date().toDateString();
   const doneToday = data.logs.filter((log) => new Date(log.completedAt).toDateString() === todayKey).length;
-  const due = data.chores.filter((chore) => statusFor(chore, data.logs) !== "normal");
+  const due = data.chores
+    .filter((chore) => statusFor(chore, data.logs) !== "normal")
+    .sort((a, b) => {
+      const priority = { overdue: 0, warning: 1, soon: 2, normal: 3 };
+      return priority[statusFor(a, data.logs)] - priority[statusFor(b, data.logs)];
+    });
   const recommended = due[0] || data.chores[0];
   const doneThisWeek = data.logs.filter((log) => daysAgo(log.completedAt)! <= 7).length;
 
@@ -19,6 +25,21 @@ export function Home() {
   }
 
   const recommendedLast = recommended ? lastLog(recommended, data.logs) : null;
+
+  function scrollToDue() {
+    dueSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function dueLabel(choreId: string) {
+    const chore = data.chores.find((item) => item.id === choreId);
+    if (!chore) return "Da controllare";
+    const status = statusFor(chore, data.logs);
+    const days = daysAgo(lastLog(chore, data.logs)?.completedAt);
+    if (status === "overdue") return "Scaduta";
+    if (status === "warning") return "Scade adesso";
+    if (days !== null && chore.frequency) return `Tra ${Math.max(0, chore.frequency - days)} giorni`;
+    return "In avvicinamento";
+  }
 
   return (
     <div className="page-stack">
@@ -49,11 +70,11 @@ export function Home() {
           <strong>{doneThisWeek}</strong>
           <span>Fatte questa settimana</span>
         </Link>
-        <Link to="/app/faccende" className="stat-card urgent">
+        <button type="button" className="stat-card urgent stat-button" onClick={scrollToDue}>
           <Sparkles size={19} />
           <strong>{due.length}</strong>
           <span>Da guardare</span>
-        </Link>
+        </button>
       </section>
 
       <section className="section-block">
@@ -69,6 +90,37 @@ export function Home() {
             </span>
           ))}
         </div>
+      </section>
+
+      <section className="section-block" ref={dueSectionRef}>
+        <div className="section-title">
+          <h2>Da guardare</h2>
+          <span>{due.length ? `${due.length} attive` : "Tutto in ordine"}</span>
+        </div>
+        {due.length ? (
+          <div className="due-list">
+            {due.map((chore) => {
+              const last = lastLog(chore, data.logs);
+              const status = statusFor(chore, data.logs);
+              return (
+                <article className={`due-card ${status}`} key={chore.id}>
+                  <span className="icon-tile">
+                    <ChoreIcon name={chore.icon} size={40} />
+                  </span>
+                  <div>
+                    <strong>{chore.title}</strong>
+                    <span>
+                      {chore.room || "Tutta casa"} - {relativeDays(daysAgo(last?.completedAt))}
+                    </span>
+                  </div>
+                  <em>{dueLabel(chore.id)}</em>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="soft-note">Nessuna faccenda in scadenza al momento.</div>
+        )}
       </section>
 
       {recommended ? (
