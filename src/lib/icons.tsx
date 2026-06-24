@@ -1,4 +1,4 @@
-import { CalendarDays, Check, Home, NotebookText, Plus, Settings } from "lucide-react";
+import { CalendarDays, Check, Home, NotebookText, Plus, Settings, Store } from "lucide-react";
 
 export const choreIconImages = {
   casa: "/chore-icons/casa.jpg",
@@ -92,5 +92,6 @@ export const navIcons = {
   add: Plus,
   calendar: CalendarDays,
   settings: Settings,
+  shop: Store,
   check: Check,
 };

@@ -409,6 +409,23 @@ p {
   color: var(--paper);
 }
 
+.header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-action {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--soft);
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 253, 249, .66);
+}
+
 .app-main {
   position: relative;
   z-index: 1;
@@ -424,6 +441,8 @@ p {
 .form-card,
 .calendar-panel,
 .settings-card,
+.empty-state,
+.pack-card,
 .stat-card,
 .task-row {
   border: 1px solid rgba(26, 26, 26, .05);
@@ -793,6 +812,80 @@ p {
 .task-row.warning,
 .task-row.overdue {
   border-color: rgba(184, 135, 141, .28);
+}
+
+.empty-state {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 22px;
+  border-radius: 28px;
+}
+
+.empty-state svg {
+  color: var(--rose);
+}
+
+.empty-state h2,
+.pack-card h2 {
+  font-family: Montserrat, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.empty-state p,
+.pack-card span,
+.status-note {
+  color: var(--muted);
+  font-size: .82rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.pack-list {
+  display: grid;
+  gap: 14px;
+}
+
+.pack-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 28px;
+}
+
+.pack-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pack-card button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 16px;
+  color: var(--paper);
+  background: var(--rose);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.status-note {
+  padding: 0 4px;
 }
 
 .form-card,

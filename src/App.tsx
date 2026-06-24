@@ -7,6 +7,7 @@ import { Chores } from "./routes/Chores";
 import { Home } from "./routes/Home";
 import { Landing } from "./routes/Landing";
 import { Settings } from "./routes/Settings";
+import { Shop } from "./routes/Shop";
 
 function ProtectedRoute() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="aggiungi" element={<AddChore />} />
         <Route path="calendario" element={<Calendar />} />
         <Route path="opzioni" element={<Settings />} />
+        <Route path="shop" element={<Shop />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

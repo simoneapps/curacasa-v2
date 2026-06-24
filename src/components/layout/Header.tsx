@@ -1,5 +1,5 @@
 import { UserButton } from "@clerk/react";
-import { Home } from "lucide-react";
+import { Home, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Header() {
@@ -11,7 +11,12 @@ export function Header() {
         </span>
         <span>CuraCasa</span>
       </Link>
-      <UserButton />
+      <div className="header-actions">
+        <UserButton />
+        <Link className="header-action" to="/app/opzioni" aria-label="Opzioni">
+          <Settings size={18} />
+        </Link>
+      </div>
     </header>
   );
 }

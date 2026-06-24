@@ -46,6 +46,36 @@ const LEGACY_ICON_MAP: Record<string, string> = {
   window: "vetri",
 };
 
+const LEGACY_DEFAULT_TITLES = new Set([
+  "Aspirapolvere",
+  "Bagni",
+  "Pulire lavandino",
+  "Cucina",
+  "Pulire cucina",
+  "Cambio letto",
+  "Balcone",
+  "Sistemare balcone",
+  "Vetri",
+  "Pulire vetri",
+  "Pulire tapparelle",
+  "Lavare tende",
+  "Annaffiare piante",
+  "Svuotare pattumiera",
+  "Pulire forno",
+  "Pulire frigorifero",
+  "Pulire doccia",
+  "Pulire WC",
+  "Fare lavatrice",
+  "Pulire specchio",
+  "Spazzare",
+  "Cambiare asciugamani",
+  "Lavare pavimento",
+  "Pulire termosifoni",
+  "Sistemare armadio",
+  "Pulire tavolo",
+  "Spolverare",
+]);
+
 export function dayKey(value: string | Date) {
   const date = value instanceof Date ? value : new Date(value);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
@@ -78,238 +108,7 @@ function id(prefix: string) {
 
 export const DEFAULT_ROOMS = ["Bagno", "Cucina", "Camera", "Soggiorno", "Balcone"];
 
-const DEFAULT_CHORES: Omit<Chore, "id" | "createdAt" | "updatedAt">[] = [
-  {
-    title: "Aspirapolvere",
-    description: "Passare l'aspirapolvere nelle zone vissute.",
-    icon: "aspirapolvere",
-    type: "ordinaria",
-    room: "",
-    frequency: 2,
-    estimatedMinutes: 20,
-    notes: "",
-  },
-  {
-    title: "Pulire lavandino",
-    description: "Pulire lavandino, rubinetto e piano d'appoggio.",
-    icon: "lavandino",
-    type: "ordinaria",
-    room: "Bagno",
-    frequency: 2,
-    estimatedMinutes: 10,
-    notes: "",
-  },
-  {
-    title: "Pulire cucina",
-    description: "Pulizia piano cottura, lavello e superfici della cucina.",
-    icon: "cucina",
-    type: "ordinaria",
-    room: "Cucina",
-    frequency: 2,
-    estimatedMinutes: 20,
-    notes: "",
-  },
-  {
-    title: "Cambio letto",
-    description: "Cambiare lenzuola e sistemare il letto.",
-    icon: "letto",
-    type: "ordinaria",
-    room: "Camera",
-    frequency: 7,
-    estimatedMinutes: 15,
-    notes: "",
-  },
-  {
-    title: "Sistemare balcone",
-    description: "Spazzare e sistemare il balcone.",
-    icon: "balcone",
-    type: "straordinaria",
-    room: "Balcone",
-    frequency: 7,
-    estimatedMinutes: 20,
-    notes: "",
-  },
-  {
-    title: "Pulire vetri",
-    description: "Pulire vetri, specchi o finestre.",
-    icon: "vetri",
-    type: "straordinaria",
-    room: "",
-    frequency: 15,
-    estimatedMinutes: 30,
-    notes: "",
-  },
-  {
-    title: "Pulire tapparelle",
-    description: "Togliere polvere e sporco dalle tapparelle.",
-    icon: "tapparelle",
-    type: "straordinaria",
-    room: "",
-    frequency: 30,
-    estimatedMinutes: 35,
-    notes: "",
-  },
-  {
-    title: "Lavare tende",
-    description: "Rimuovere, lavare e riappendere le tende.",
-    icon: "tende",
-    type: "straordinaria",
-    room: "Soggiorno",
-    frequency: 60,
-    estimatedMinutes: 45,
-    notes: "",
-  },
-  {
-    title: "Annaffiare piante",
-    description: "Controllare acqua, foglie e sottovasi.",
-    icon: "piante",
-    type: "ordinaria",
-    room: "Balcone",
-    frequency: 3,
-    estimatedMinutes: 8,
-    notes: "",
-  },
-  {
-    title: "Svuotare pattumiera",
-    description: "Svuotare e rimettere il sacchetto.",
-    icon: "pattumiera",
-    type: "ordinaria",
-    room: "Cucina",
-    frequency: 1,
-    estimatedMinutes: 5,
-    notes: "",
-  },
-  {
-    title: "Pulire forno",
-    description: "Pulire interno, vetro e griglie del forno.",
-    icon: "forno",
-    type: "straordinaria",
-    room: "Cucina",
-    frequency: 30,
-    estimatedMinutes: 40,
-    notes: "",
-  },
-  {
-    title: "Pulire frigorifero",
-    description: "Controllare ripiani, guarnizioni e alimenti scaduti.",
-    icon: "frigorifero",
-    type: "straordinaria",
-    room: "Cucina",
-    frequency: 30,
-    estimatedMinutes: 30,
-    notes: "",
-  },
-  {
-    title: "Pulire doccia",
-    description: "Pulire vetro, piatto doccia e rubinetteria.",
-    icon: "doccia",
-    type: "ordinaria",
-    room: "Bagno",
-    frequency: 4,
-    estimatedMinutes: 15,
-    notes: "",
-  },
-  {
-    title: "Pulire WC",
-    description: "Pulizia interna, esterna e zona circostante.",
-    icon: "wc",
-    type: "ordinaria",
-    room: "Bagno",
-    frequency: 2,
-    estimatedMinutes: 10,
-    notes: "",
-  },
-  {
-    title: "Fare lavatrice",
-    description: "Avviare lavaggio e gestire il bucato pulito.",
-    icon: "lavatrice",
-    type: "ordinaria",
-    room: "",
-    frequency: 3,
-    estimatedMinutes: 15,
-    notes: "",
-  },
-  {
-    title: "Pulire specchio",
-    description: "Pulire specchio e piccole superfici vicine.",
-    icon: "specchio",
-    type: "ordinaria",
-    room: "Bagno",
-    frequency: 4,
-    estimatedMinutes: 8,
-    notes: "",
-  },
-  {
-    title: "Spazzare",
-    description: "Spazzare le zone di passaggio.",
-    icon: "scopa",
-    type: "ordinaria",
-    room: "",
-    frequency: 2,
-    estimatedMinutes: 15,
-    notes: "",
-  },
-  {
-    title: "Cambiare asciugamani",
-    description: "Sostituire asciugamani e tappetino bagno.",
-    icon: "asciugamani",
-    type: "ordinaria",
-    room: "Bagno",
-    frequency: 3,
-    estimatedMinutes: 8,
-    notes: "",
-  },
-  {
-    title: "Lavare pavimento",
-    description: "Lavare pavimenti nelle zone principali.",
-    icon: "mocio-secchio",
-    type: "ordinaria",
-    room: "",
-    frequency: 3,
-    estimatedMinutes: 25,
-    notes: "",
-  },
-  {
-    title: "Pulire termosifoni",
-    description: "Togliere polvere da termosifoni e angoli vicini.",
-    icon: "termosifone",
-    type: "straordinaria",
-    room: "",
-    frequency: 45,
-    estimatedMinutes: 25,
-    notes: "",
-  },
-  {
-    title: "Sistemare armadio",
-    description: "Riordinare ante, ripiani e capi fuori posto.",
-    icon: "armadio",
-    type: "straordinaria",
-    room: "Camera",
-    frequency: 30,
-    estimatedMinutes: 30,
-    notes: "",
-  },
-  {
-    title: "Pulire tavolo",
-    description: "Liberare e pulire tavolo o piano pranzo.",
-    icon: "tavolo",
-    type: "ordinaria",
-    room: "Soggiorno",
-    frequency: 2,
-    estimatedMinutes: 10,
-    notes: "",
-  },
-  {
-    title: "Spolverare",
-    description: "Spolverare mensole, mobili e punti visibili.",
-    icon: "spolverino",
-    type: "ordinaria",
-    room: "",
-    frequency: 5,
-    estimatedMinutes: 20,
-    notes: "",
-  },
-];
+const DEFAULT_CHORES: Omit<Chore, "id" | "createdAt" | "updatedAt">[] = [];
 
 export function createDefaultData(): AppData {
   const stamp = now();
@@ -334,12 +133,21 @@ export function loadData(): AppData {
   }
   try {
     const parsed = JSON.parse(raw) as AppData;
+    const rooms = Array.isArray(parsed.rooms) ? parsed.rooms : DEFAULT_ROOMS;
+    const chores = Array.isArray(parsed.chores)
+      ? parsed.chores.map((chore) => ({ ...chore, icon: LEGACY_ICON_MAP[chore.icon] || chore.icon }))
+      : [];
+    const logs = Array.isArray(parsed.logs) ? parsed.logs : [];
+    const onlyLegacyDefaults = chores.length > 0 && chores.every((chore) => LEGACY_DEFAULT_TITLES.has(chore.title));
+    if (!logs.length && onlyLegacyDefaults) {
+      const data = { rooms, chores: [], logs };
+      saveData(data);
+      return data;
+    }
     return {
-      rooms: Array.isArray(parsed.rooms) ? parsed.rooms : DEFAULT_ROOMS,
-      chores: Array.isArray(parsed.chores)
-        ? parsed.chores.map((chore) => ({ ...chore, icon: LEGACY_ICON_MAP[chore.icon] || chore.icon }))
-        : [],
-      logs: Array.isArray(parsed.logs) ? parsed.logs : [],
+      rooms,
+      chores,
+      logs,
     };
   } catch {
     const data = createDefaultData();

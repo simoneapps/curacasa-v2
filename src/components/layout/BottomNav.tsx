@@ -6,7 +6,7 @@ const items = [
   { to: "/app/faccende", label: "Faccende", icon: navIcons.chores },
   { to: "/app/aggiungi", label: "Aggiungi", icon: navIcons.add, add: true },
   { to: "/app/calendario", label: "Calendario", icon: navIcons.calendar },
-  { to: "/app/opzioni", label: "Opzioni", icon: navIcons.settings },
+  { to: "/app/shop", label: "Shop", icon: navIcons.shop },
 ];
 
 export function BottomNav() {

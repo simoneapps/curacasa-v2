@@ -33,7 +33,7 @@ export function Home() {
           <h1>Casa sotto controllo, con calma.</h1>
           <p>Qui trovi cosa e stato fatto, cosa torna in scadenza e il prossimo gesto utile.</p>
           <Link className="pill-button" to="/app/faccende">
-            Gestisci stanze
+            Vai alle faccende
           </Link>
         </div>
         <div className="progress-jewel" aria-label={`${progress}% fatto oggi`}>
@@ -44,10 +44,10 @@ export function Home() {
               cx="48"
               cy="48"
               r="35"
-              style={{ strokeDashoffset: 220 - (220 * Math.max(progress, 20)) / 100 }}
+              style={{ strokeDashoffset: data.chores.length ? 220 - (220 * Math.max(progress, 20)) / 100 : 220 }}
             />
           </svg>
-          <strong>{progress || 20}%</strong>
+          <strong>{progress}%</strong>
           <small>oggi</small>
         </div>
       </section>
@@ -106,7 +106,21 @@ export function Home() {
             <Sparkles size={18} />
           </button>
         </section>
-      ) : null}
+      ) : (
+        <section className="empty-state">
+          <ListChecks size={24} />
+          <h2>Nessuna faccenda</h2>
+          <p>Aggiungi la prima faccenda o scegli un set dallo Shop.</p>
+          <div className="empty-actions">
+            <Link className="pill-button" to="/app/aggiungi">
+              Aggiungi faccenda
+            </Link>
+            <Link className="secondary-action" to="/app/shop">
+              Apri Shop
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
