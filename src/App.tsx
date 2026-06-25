@@ -1,6 +1,8 @@
 import { useAuth } from "@clerk/react";
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "./components/layout/AppShell";
+import { initPwaInstallPrompt, registerServiceWorker } from "./lib/pwa";
 import { AddChore } from "./routes/AddChore";
 import { Calendar } from "./routes/Calendar";
 import { Chores } from "./routes/Chores";
@@ -20,6 +22,11 @@ function ProtectedRoute() {
 }
 
 export default function App() {
+  useEffect(() => {
+    initPwaInstallPrompt();
+    registerServiceWorker();
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Landing />} />

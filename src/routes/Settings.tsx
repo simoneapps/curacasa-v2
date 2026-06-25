@@ -1,6 +1,7 @@
 import { SignOutButton, useUser } from "@clerk/react";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Download, Plus, Trash2, Upload } from "lucide-react";
+import { Download, Plus, RefreshCw, Trash2, Upload } from "lucide-react";
+import { forceAppUpdate } from "../lib/pwa";
 import { createDefaultData, downloadJson, loadData, saveData } from "../lib/store";
 
 export function Settings() {
@@ -77,6 +78,16 @@ export function Settings() {
           </label>
           <button type="button" onClick={clearData}>
             <Trash2 size={17} /> Ripristina demo
+          </button>
+        </div>
+      </section>
+
+      <section className="settings-card">
+        <h2>App installata</h2>
+        <p>Usa questo comando se la versione salvata nella schermata Home non si aggiorna.</p>
+        <div className="action-row">
+          <button type="button" onClick={forceAppUpdate}>
+            <RefreshCw size={17} /> Forza aggiornamento
           </button>
         </div>
       </section>

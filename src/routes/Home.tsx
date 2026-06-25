@@ -1,11 +1,13 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, Check, Clock, ListChecks, Sparkles } from "lucide-react";
+import { CalendarDays, Check, Clock, Download, ListChecks, Sparkles } from "lucide-react";
 import { ChoreIcon } from "../lib/icons";
+import { canInstallApp, requestAppInstall } from "../lib/pwa";
 import { addLog, daysAgo, lastLog, loadData, relativeDays, saveData, statusFor } from "../lib/store";
 
 export function Home() {
   const [data, setData] = useState(loadData);
+  const [showInstall, setShowInstall] = useState(canInstallApp);
   const dueSectionRef = useRef<HTMLElement | null>(null);
   const todayKey = new Date().toDateString();
   const doneToday = data.logs.filter((log) => new Date(log.completedAt).toDateString() === todayKey).length;
@@ -23,6 +25,16 @@ export function Home() {
     saveData(next);
     setData(next);
   }
+
+  useEffect(() => {
+    function syncInstallState() {
+      setShowInstall(canInstallApp());
+    }
+
+    syncInstallState();
+    window.addEventListener("curacasa-install-ready", syncInstallState);
+    return () => window.removeEventListener("curacasa-install-ready", syncInstallState);
+  }, []);
 
   const recommendedLast = recommended ? lastLog(recommended, data.logs) : null;
 
@@ -53,6 +65,26 @@ export function Home() {
           </Link>
         </div>
       </section>
+
+      {showInstall ? (
+        <section className="install-card">
+          <div>
+            <p className="eyebrow">Schermata Home</p>
+            <h2>Installa CuraCasa</h2>
+            <span>Aprila come app, senza passare dal browser.</span>
+          </div>
+          <button
+            type="button"
+            onClick={async () => {
+              await requestAppInstall();
+              setShowInstall(canInstallApp());
+            }}
+          >
+            <Download size={17} />
+            Installa
+          </button>
+        </section>
+      ) : null}
 
       <section className="stats-grid">
         <Link to="/app/faccende" className="stat-card">
