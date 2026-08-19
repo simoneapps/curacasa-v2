@@ -1360,6 +1360,30 @@ select {
   opacity: .3;
 }
 
+.calendar-diary {
+  padding: 20px;
+  border: 1px solid rgba(26, 26, 26, .05);
+  border-radius: 28px;
+  background: rgba(255, 253, 249, .82);
+  box-shadow: var(--shadow);
+}
+
+.calendar-diary-title {
+  align-items: flex-end;
+}
+
+.calendar-diary-title h2 {
+  margin-top: 3px;
+}
+
+.calendar-log-list {
+  gap: 10px;
+}
+
+.calendar-log-row {
+  box-shadow: var(--shadow-soft);
+}
+
 .mini-list,
 .room-list {
   display: grid;

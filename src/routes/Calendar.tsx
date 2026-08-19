@@ -1,11 +1,28 @@
-import { FormEvent, useMemo, useState } from "react";
-import { CalendarPlus } from "lucide-react";
-import { addLog, dayKey, loadData, monthKey, saveData } from "../lib/store";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { CalendarPlus, Clock, Pencil, Play, Square, X } from "lucide-react";
+import { ChoreIcon } from "../lib/icons";
+import { addLog, dayKey, loadData, monthKey, saveData, type ChoreLog } from "../lib/store";
+
+function timerText(seconds: number) {
+  const minutes = Math.floor(seconds / 60);
+  const rest = seconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+}
 
 export function Calendar() {
   const [data, setData] = useState(loadData);
   const [month, setMonth] = useState(monthKey());
   const [selectedDay, setSelectedDay] = useState(dayKey(new Date()));
+  const [addRoom, setAddRoom] = useState("");
+  const [addManualMinutes, setAddManualMinutes] = useState("");
+  const [addElapsedSeconds, setAddElapsedSeconds] = useState(0);
+  const [addTimerStartedAt, setAddTimerStartedAt] = useState<number | null>(null);
+  const [editingLogId, setEditingLogId] = useState<string | null>(null);
+  const [editRoom, setEditRoom] = useState("");
+  const [editNote, setEditNote] = useState("");
+  const [editManualMinutes, setEditManualMinutes] = useState("");
+  const [editElapsedSeconds, setEditElapsedSeconds] = useState(0);
+  const [editTimerStartedAt, setEditTimerStartedAt] = useState<number | null>(null);
 
   const cells = useMemo(() => {
     const [year, monthNumber] = month.split("-").map(Number);
@@ -18,10 +35,45 @@ export function Calendar() {
   }, [month]);
 
   const selectedLogs = data.logs.filter((log) => dayKey(log.completedAt) === selectedDay);
+  const selectedCountLabel = selectedLogs.length === 1 ? "1 faccenda" : `${selectedLogs.length} faccende`;
+
+  useEffect(() => {
+    if (!addTimerStartedAt) return;
+    const interval = window.setInterval(() => {
+      setAddElapsedSeconds(Math.floor((Date.now() - addTimerStartedAt) / 1000));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [addTimerStartedAt]);
+
+  useEffect(() => {
+    if (!editTimerStartedAt) return;
+    const interval = window.setInterval(() => {
+      setEditElapsedSeconds(Math.floor((Date.now() - editTimerStartedAt) / 1000));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [editTimerStartedAt]);
 
   function shift(offset: number) {
     const [year, monthNumber] = month.split("-").map(Number);
     setMonth(monthKey(new Date(year, monthNumber - 1 + offset, 1)));
+  }
+
+  function stopEditingLog() {
+    setEditingLogId(null);
+    setEditRoom("");
+    setEditNote("");
+    setEditManualMinutes("");
+    setEditElapsedSeconds(0);
+    setEditTimerStartedAt(null);
+  }
+
+  function roomLabel(log: ChoreLog) {
+    return log.rooms?.[0] || "Tutta la casa";
+  }
+
+  function durationFrom(manualMinutes: string, elapsedSeconds: number) {
+    const timerMinutes = elapsedSeconds ? Math.max(1, Math.round(elapsedSeconds / 60)) : 0;
+    return Number(manualMinutes || timerMinutes || 0);
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -31,12 +83,57 @@ export function Calendar() {
     if (!choreId) return;
     const next = addLog(data, choreId, {
       completedAt: `${selectedDay}T12:00:00`,
-      durationMinutes: Number(form.get("durationMinutes") || 0),
+      durationMinutes: durationFrom(addManualMinutes, addElapsedSeconds),
       note: String(form.get("note") || ""),
+      rooms: addRoom ? [addRoom] : [],
     });
     saveData(next);
     setData(next);
     event.currentTarget.reset();
+    setAddRoom("");
+    setAddManualMinutes("");
+    setAddElapsedSeconds(0);
+    setAddTimerStartedAt(null);
+  }
+
+  function removeLog(logId: string) {
+    const next = {
+      ...data,
+      logs: data.logs.filter((log) => log.id !== logId),
+    };
+    saveData(next);
+    setData(next);
+    if (editingLogId === logId) stopEditingLog();
+  }
+
+  function startEditLog(log: ChoreLog) {
+    setEditingLogId(log.id);
+    setEditRoom(log.rooms?.[0] || "");
+    setEditNote(log.note || "");
+    setEditManualMinutes(log.durationMinutes ? String(log.durationMinutes) : "");
+    setEditElapsedSeconds(0);
+    setEditTimerStartedAt(null);
+  }
+
+  function submitEditLog(event: FormEvent<HTMLFormElement>, logId: string) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const next = {
+      ...data,
+      logs: data.logs.map((log) =>
+        log.id === logId
+          ? {
+              ...log,
+              durationMinutes: durationFrom(editManualMinutes, editElapsedSeconds),
+              note: String(form.get("note") || ""),
+              rooms: editRoom ? [editRoom] : [],
+            }
+          : log,
+      ),
+    };
+    saveData(next);
+    setData(next);
+    stopEditingLog();
   }
 
   return (
@@ -80,7 +177,10 @@ export function Calendar() {
                 className={`calendar-day ${selectedDay === key ? "active" : ""} ${count ? "has-log" : ""}`}
                 key={key}
                 type="button"
-                onClick={() => setSelectedDay(key)}
+                onClick={() => {
+                  setSelectedDay(key);
+                  stopEditingLog();
+                }}
               >
                 <strong>{date.getDate()}</strong>
                 {count ? <span>{count}</span> : null}
@@ -90,20 +190,97 @@ export function Calendar() {
         </div>
       </section>
 
-      <section className="section-block">
-        <div className="section-title">
-          <h2>{new Date(`${selectedDay}T12:00:00`).toLocaleDateString("it-IT")}</h2>
-          <span>{selectedLogs.length} registrazioni</span>
+      <section className="section-block calendar-diary">
+        <div className="section-title calendar-diary-title">
+          <div>
+            <p className="eyebrow">Diario delle faccende</p>
+            <h2>{new Date(`${selectedDay}T12:00:00`).toLocaleDateString("it-IT")}</h2>
+          </div>
+          <span>{selectedCountLabel}</span>
         </div>
-        <div className="mini-list">
+        <div className="task-list calendar-log-list">
           {selectedLogs.length ? (
             selectedLogs.map((log) => {
               const chore = data.chores.find((item) => item.id === log.choreId);
               return (
-                <article className="mini-row" key={log.id}>
-                  <strong>{chore?.title || "Faccenda"}</strong>
-                  <span>{log.durationMinutes ? `${log.durationMinutes} min` : "durata non segnata"}</span>
-                </article>
+                <div className="task-edit-group" key={log.id}>
+                  <article className="task-row calendar-log-row">
+                    <span className="icon-tile">
+                      <ChoreIcon name={chore?.icon || "casa"} size={40} />
+                    </span>
+                    <div>
+                      <strong>{chore?.title || "Faccenda"}</strong>
+                      <span>
+                        {roomLabel(log)}
+                        {log.note ? ` - ${log.note}` : ""}
+                      </span>
+                    </div>
+                    <div className="task-actions">
+                      <button type="button" onClick={() => startEditLog(log)} aria-label={`Modifica ${chore?.title || "faccenda"}`}>
+                        <Pencil size={16} />
+                      </button>
+                      <button type="button" onClick={() => removeLog(log.id)} aria-label={`Rimuovi ${chore?.title || "faccenda"} dal giorno`}>
+                        <X size={17} />
+                      </button>
+                    </div>
+                  </article>
+                  {editingLogId === log.id ? (
+                    <form className="task-edit-card" onSubmit={(event) => submitEditLog(event, log.id)}>
+                      <div className="form-title">
+                        <Pencil size={18} />
+                        <h2>Modifica registrazione</h2>
+                        <button className="icon-only-button" type="button" onClick={stopEditingLog} aria-label="Chiudi modifica">
+                          <X size={17} />
+                        </button>
+                      </div>
+                      <label>
+                        Stanza
+                        <select value={editRoom} onChange={(event) => setEditRoom(event.target.value)}>
+                          <option value="">Tutta la casa</option>
+                          {data.rooms.map((room) => (
+                            <option key={room} value={room}>
+                              {room}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <div className="form-grid">
+                        <label>
+                          Minuti
+                          <input
+                            value={editManualMinutes}
+                            onChange={(event) => setEditManualMinutes(event.target.value)}
+                            type="number"
+                            min="0"
+                            inputMode="numeric"
+                          />
+                        </label>
+                        <label>
+                          Nota
+                          <input name="note" value={editNote} onChange={(event) => setEditNote(event.target.value)} placeholder="Dettagli" />
+                        </label>
+                      </div>
+                      <div className="timer-card">
+                        <div>
+                          <Clock size={18} />
+                          <strong>{timerText(editElapsedSeconds)}</strong>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditTimerStartedAt((startedAt) => (startedAt ? null : Date.now() - editElapsedSeconds * 1000))
+                          }
+                        >
+                          {editTimerStartedAt ? <Square size={16} /> : <Play size={16} />}
+                          {editTimerStartedAt ? "Ferma" : "Avvia"}
+                        </button>
+                      </div>
+                      <button className="primary-action" type="submit">
+                        Salva registrazione
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
               );
             })
           ) : (
@@ -128,15 +305,45 @@ export function Calendar() {
             ))}
           </select>
         </label>
+        <label>
+          Stanza
+          <select value={addRoom} onChange={(event) => setAddRoom(event.target.value)}>
+            <option value="">Tutta la casa</option>
+            {data.rooms.map((room) => (
+              <option key={room} value={room}>
+                {room}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="form-grid">
           <label>
             Minuti
-            <input name="durationMinutes" type="number" min="0" inputMode="numeric" />
+            <input
+              value={addManualMinutes}
+              onChange={(event) => setAddManualMinutes(event.target.value)}
+              type="number"
+              min="0"
+              inputMode="numeric"
+            />
           </label>
           <label>
             Nota
             <input name="note" placeholder="Dettagli" />
           </label>
+        </div>
+        <div className="timer-card">
+          <div>
+            <Clock size={18} />
+            <strong>{timerText(addElapsedSeconds)}</strong>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAddTimerStartedAt((startedAt) => (startedAt ? null : Date.now() - addElapsedSeconds * 1000))}
+          >
+            {addTimerStartedAt ? <Square size={16} /> : <Play size={16} />}
+            {addTimerStartedAt ? "Ferma" : "Avvia"}
+          </button>
         </div>
         <button className="primary-action" type="submit">
           Aggiungi registrazione
