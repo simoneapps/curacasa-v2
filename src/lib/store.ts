@@ -19,6 +19,7 @@ export type ChoreLog = {
   choreId: string;
   completedAt: string;
   durationMinutes: number;
+  durationSeconds?: number;
   note: string;
   rooms: string[];
 };
@@ -183,6 +184,7 @@ export function addLog(data: AppData, choreId: string, payload?: Partial<ChoreLo
     choreId,
     completedAt: payload?.completedAt || now(),
     durationMinutes: Number(payload?.durationMinutes || 0),
+    durationSeconds: Number(payload?.durationSeconds || 0),
     note: payload?.note || "",
     rooms: payload?.rooms || [],
   };

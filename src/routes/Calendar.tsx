@@ -4,9 +4,27 @@ import { ChoreIcon } from "../lib/icons";
 import { addLog, dayKey, loadData, monthKey, saveData, type ChoreLog } from "../lib/store";
 
 function timerText(seconds: number) {
-  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const rest = seconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(rest).padStart(2, "0")}`;
+  if (hours) {
+    return `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m ${String(rest).padStart(2, "0")}s`;
+  }
+  return `${String(minutes).padStart(2, "0")}m ${String(rest).padStart(2, "0")}s`;
+}
+
+function currentElapsedSeconds(elapsedSeconds: number, startedAt: number | null) {
+  return startedAt ? Math.floor((Date.now() - startedAt) / 1000) : elapsedSeconds;
+}
+
+function durationSecondsFrom(manualMinutes: string, elapsedSeconds: number, startedAt: number | null) {
+  const manual = Number(manualMinutes);
+  if (manualMinutes && Number.isFinite(manual)) return Math.max(0, Math.round(manual * 60));
+  return currentElapsedSeconds(elapsedSeconds, startedAt);
+}
+
+function logDurationSeconds(log: ChoreLog) {
+  return Number(log.durationSeconds || log.durationMinutes * 60 || 0);
 }
 
 export function Calendar() {
@@ -71,19 +89,16 @@ export function Calendar() {
     return log.rooms?.[0] || "Tutta la casa";
   }
 
-  function durationFrom(manualMinutes: string, elapsedSeconds: number) {
-    const timerMinutes = elapsedSeconds ? Math.max(1, Math.round(elapsedSeconds / 60)) : 0;
-    return Number(manualMinutes || timerMinutes || 0);
-  }
-
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const choreId = String(form.get("choreId") || "");
     if (!choreId) return;
+    const durationSeconds = durationSecondsFrom(addManualMinutes, addElapsedSeconds, addTimerStartedAt);
     const next = addLog(data, choreId, {
       completedAt: `${selectedDay}T12:00:00`,
-      durationMinutes: durationFrom(addManualMinutes, addElapsedSeconds),
+      durationMinutes: Math.ceil(durationSeconds / 60),
+      durationSeconds,
       note: String(form.get("note") || ""),
       rooms: addRoom ? [addRoom] : [],
     });
@@ -110,21 +125,23 @@ export function Calendar() {
     setEditingLogId(log.id);
     setEditRoom(log.rooms?.[0] || "");
     setEditNote(log.note || "");
-    setEditManualMinutes(log.durationMinutes ? String(log.durationMinutes) : "");
-    setEditElapsedSeconds(0);
+    setEditManualMinutes("");
+    setEditElapsedSeconds(logDurationSeconds(log));
     setEditTimerStartedAt(null);
   }
 
   function submitEditLog(event: FormEvent<HTMLFormElement>, logId: string) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const durationSeconds = durationSecondsFrom(editManualMinutes, editElapsedSeconds, editTimerStartedAt);
     const next = {
       ...data,
       logs: data.logs.map((log) =>
         log.id === logId
           ? {
               ...log,
-              durationMinutes: durationFrom(editManualMinutes, editElapsedSeconds),
+              durationMinutes: Math.ceil(durationSeconds / 60),
+              durationSeconds,
               note: String(form.get("note") || ""),
               rooms: editRoom ? [editRoom] : [],
             }
@@ -212,6 +229,7 @@ export function Calendar() {
                       <strong>{chore?.title || "Faccenda"}</strong>
                       <span>
                         {roomLabel(log)}
+                        {logDurationSeconds(log) ? ` - ${timerText(logDurationSeconds(log))}` : ""}
                         {log.note ? ` - ${log.note}` : ""}
                       </span>
                     </div>
@@ -246,13 +264,14 @@ export function Calendar() {
                       </label>
                       <div className="form-grid">
                         <label>
-                          Minuti
+                          Durata
                           <input
                             value={editManualMinutes}
                             onChange={(event) => setEditManualMinutes(event.target.value)}
                             type="number"
                             min="0"
                             inputMode="numeric"
+                            placeholder="Minuti manuali"
                           />
                         </label>
                         <label>
@@ -318,13 +337,14 @@ export function Calendar() {
         </label>
         <div className="form-grid">
           <label>
-            Minuti
+            Durata
             <input
               value={addManualMinutes}
               onChange={(event) => setAddManualMinutes(event.target.value)}
               type="number"
               min="0"
               inputMode="numeric"
+              placeholder="Minuti manuali"
             />
           </label>
           <label>
